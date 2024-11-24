@@ -1,4 +1,3 @@
-# Workflow to build and deploy a Jekyll site to GitHub Pages
 name: Build and Deploy Jekyll Site
 
 on:
