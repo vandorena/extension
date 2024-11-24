@@ -17,7 +17,7 @@ function getWeather(lat, lon) {
         getLocationName(lat, lon, temperature, weatherCode, precipitation, cloudCover, windSpeed, windDirection, windGust);
       } else {
         console.error('Unexpected weather data structure:', data);
-      }
+      }//
     })
     .catch(error => console.error('Error fetching weather data:', error));
 }
@@ -36,33 +36,74 @@ function getLocationName(lat, lon, temperature, weatherCode, precipitation, clou
         const city = components.city || components.town || components.village || 'Unknown city';
         const country = components.country || 'Unknown country';
         const location = `${firstLine}, ${city}, ${country}`;
+        const isWater = components._type === 'water';
         const weatherDiv = document.getElementById('weather');
         const weatherImage = getWeatherImage(weatherCode);
-        weatherDiv.innerHTML = `
-          <div style="
-            background: linear-gradient(45deg, orange, yellow);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            color: black;
-            font-family: Arial, sans-serif;
-          ">
-          <h2>
-            <img src="${weatherImage}" alt="Weather condition" style="vertical-align: middle; width: 32px; height: 32px;">
-            Weather at ${location}
-          </h2>
-          <p>Temperature: ${temperature}&deg;C</p>
-          <p>Precipitation: ${precipitation} mm</p>
-          <p>Cloud Cover: ${cloudCover}%</p>
-          <p>Wind Speed: ${windSpeed} kts</p>
-          <p>Wind Direction: ${windDirection}&deg;</p>
-          <p>Wind Gust: ${windGust} kts</p>
-        `;
+        let message = '';
+
+        if (isWater) {
+          message = 'Yay, you are out at sea!';
+        } else if (windSpeed > 5) {
+          message = 'Go sailing!';
+        } else {
+          message = 'God, I wish there was more wind.';
+        }
+
+        getDistanceToSea(lat, lon, (nearestWaterbody) => {
+          weatherDiv.innerHTML = `
+            <div style="
+              background: linear-gradient(45deg, orange, yellow);
+              padding: 20px;
+              border-radius: 10px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+              color: black;
+              font-family: Arial, sans-serif;
+            ">
+            <h2>
+              <img src="${weatherImage}" alt="Weather condition" style="vertical-align: middle; width: 32px; height: 32px;">
+              Weather at ${location}
+            </h2>
+            <p>Temperature: ${temperature}&deg;C</p>
+            <p>Precipitation: ${precipitation} mm</p>
+            <p>Cloud Cover: ${cloudCover}%</p>
+            <p>Wind Speed: ${windSpeed} kts</p>
+            <p>Wind Direction: ${windDirection}&deg;</p>
+            <p>Wind Gust: ${windGust} kts</p>
+            <p>${message}</p>
+            <p>Nearest Waterbody: ${nearestWaterbody.name}</p>
+            <p>Location: ${nearestWaterbody.latitude}, ${nearestWaterbody.longitude}</p>
+          `;
+        });
       } else {
         console.error('Unexpected location data structure:', data);
       }
     })
     .catch(error => console.error('Error fetching location data:', error));
+}
+
+function getDistanceToSea(lat, lon, callback) {
+  const distanceToSeaUrl = `https://api.wateratlas.usf.edu/waterbodies/closest?lat=${lat}&lon=${lon}&accuracy=1&len=1&s=1`;
+  console.log('Fetching distance to sea from:', distanceToSeaUrl);
+
+  fetch(distanceToSeaUrl)
+    .then(response => response.json())
+    .then(data => {
+      console.log('Distance to sea data:', data);
+      if (data && data.waterbodies && data.waterbodies.length > 0) {
+        const nearestWaterbody = data.waterbodies[0].Waterbody;
+        callback({
+          name: nearestWaterbody.Name,
+          latitude: nearestWaterbody.Location.latitude,
+          longitude: nearestWaterbody.Location.longitude
+        });
+      } else {
+        callback({ name: 'No data available', latitude: 'N/A', longitude: 'N/A' });
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching distance to sea:', error);
+      callback({ name: 'Error fetching data', latitude: 'N/A', longitude: 'N/A' });
+    });
 }
 
 function getWeatherImage(weatherCode) {
