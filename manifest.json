@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "My Weather App",
+  "description": "Basic geolocation weather app",
+  "version": "2.0",
+  "permissions": [
+    "geolocation"
+  ],
+  "action": {
+    "default_popup": "hello.html",
+    "default_icon": "untitled.png"
+  }
+}
