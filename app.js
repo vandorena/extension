@@ -40,11 +40,13 @@ function getLocationName(lat, lon, temperature, weatherCode, precipitation, clou
         const weatherDiv = document.getElementById('weather');
         const weatherImage = getWeatherImage(weatherCode);
         let message = '';
+        let boatGif = '';
 
         if (isWater) {
           message = 'Yay, you are out at sea!';
         } else if (windSpeed > 5) {
           message = 'Go sailing!';
+          boatGif = `<img src="sailing-surfing.gif" alt="Boat animation" style="width: 100px; height: 100px;">`;
         } else {
           message = 'God, I wish there was more wind.';
         }
@@ -59,19 +61,28 @@ function getLocationName(lat, lon, temperature, weatherCode, precipitation, clou
               color: black;
               font-family: Arial, sans-serif;
             ">
-            <h2>
-              <img src="${weatherImage}" alt="Weather condition" style="vertical-align: middle; width: 32px; height: 32px;">
-              Weather at ${location}
-            </h2>
-            <p>Temperature: ${temperature}&deg;C</p>
-            <p>Precipitation: ${precipitation} mm</p>
-            <p>Cloud Cover: ${cloudCover}%</p>
-            <p>Wind Speed: ${windSpeed} kts</p>
-            <p>Wind Direction: ${windDirection}&deg;</p>
-            <p>Wind Gust: ${windGust} kts</p>
-            <p>${message}</p>
-            <p>Nearest Waterbody: ${nearestWaterbody.name}</p>
-            <p>Location: ${nearestWaterbody.latitude}, ${nearestWaterbody.longitude}</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <h2 style="width: 100%; text-align: center;">
+                <img src="${weatherImage}" alt="Weather condition" style="vertical-align: middle; width: 32px; height: 32px;">
+                Weather at ${location}
+              </h2>
+              <div style="display: flex; width: 100%;">
+                <div style="flex: 1; padding: 10px;">
+                  <p>Temperature: ${temperature}&deg;C</p>
+                  <p>Precipitation: ${precipitation} mm</p>
+                  <p>Cloud Cover: ${cloudCover}%</p>
+                  <p>Wind Speed: ${windSpeed} kts</p>
+                  <p>Wind Direction: ${windDirection}&deg;</p>
+                  <p>Wind Gust: ${windGust} kts</p>
+                  <p>${message}</p>
+                  <p>Nearest Waterbody: ${nearestWaterbody.name}</p>
+                  <p>Location: ${nearestWaterbody.latitude}, ${nearestWaterbody.longitude}</p>
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                  ${boatGif}
+                </div>
+              </div>
+            </div>
           `;
         });
       } else {
@@ -167,3 +178,35 @@ function initMap() {
 }
 
 document.addEventListener('DOMContentLoaded', initMap);
+
+//MOV R0, #25
+//MVN R1, #10
+//LSR R2, R0, R1
+//LSL R3,R2,R1
+//AND R4,R3,R2
+//HALT
+
+//MOV R6, #25
+//MVN R1, R0
+//AND R2,R1,#15
+//LSL R3,R1,#3
+//LSR R4,R1,#3
+//HALT
+
+//MOV R0,#0x100
+//MOV R1, #2
+//MOV R2, #1
+//LOOP:
+//LSL R0,R0,R2
+//CMP R0,R1
+//BLT LOOP
+//CMP R0,R2
+//BEQ END
+//END:
+//HALT
+
+//MOV R0, #00000000
+//MOV R0, #10101010
+
+//MVN R1,R0
+
