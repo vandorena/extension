@@ -46,7 +46,7 @@ function getLocationName(lat, lon, temperature, weatherCode, precipitation, clou
           message = 'Yay, you are out at sea!';
         } else if (windSpeed > 5) {
           message = 'Go sailing!';
-          boatGif = `<img src="sailing-surfing.gif" alt="Boat animation" style="width: 100px; height: 100px;">`;
+          boatGif = `<img src="sailing-surfing.gif" alt="Boat animation" style="width: 200px; height: 200px;">`;
         } else {
           message = 'God, I wish there was more wind.';
         }
